@@ -305,24 +305,14 @@ class WebSocketHandler(StreamRequestHandler):
         header.append(payload_length)
         self.request.send(header + payload)
 
-    def send_text(self, message, opcode=OPCODE_TEXT):
+    def send_text(self, message, opcode=OPCODE_BINARY):
         """
         Important: Fragmented(=continuation) messages are not supported since
         their usage cases are limited - when we don't know the payload length.
         """
 
-        # Validate message
-        if isinstance(message, bytes):
-            message = try_decode_UTF8(message)  # this is slower but ensures we have UTF-8
-            if not message:
-                logger.warning("Can\'t send message, message is not valid UTF-8")
-                return False
-        elif not isinstance(message, str):
-            logger.warning('Can\'t send message, message has to be a string or bytes. Got %s' % type(message))
-            return False
-
-        header  = bytearray()
-        payload = encode_to_UTF8(message)
+	header  = bytearray()
+        payload = message
         payload_length = len(payload)
 
         # Normal payload
