@@ -310,8 +310,11 @@ class WebSocketHandler(StreamRequestHandler):
         Important: Fragmented(=continuation) messages are not supported since
         their usage cases are limited - when we don't know the payload length.
         """
+        if isinstance(message, str):
+            opcode = OPCODE_TEXT
+            message = encode_to_UTF8(message)
 
-	header  = bytearray()
+        header  = bytearray()
         payload = message
         payload_length = len(payload)
 
